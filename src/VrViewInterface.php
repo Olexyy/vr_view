@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityChangedInterface;
 
 /**
  * Provides an interface defining an entity.
+ *
  * It is good practise to provide an interface to
  * define the public access to an entity. In
  * addition, it invokes the 'EntityOwnerInterface'
