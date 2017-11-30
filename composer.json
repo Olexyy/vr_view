@@ -1,0 +1,19 @@
+{
+  "name": "drupal/vr_view",
+  "description": "Integration for VR View images display on Drupal.",
+  "type": "drupal-module",
+  "homepage": "https://drupal.org/project/vr_view",
+  "authors": [
+    {
+      "name": "Olexyy Osadchyy",
+      "homepage": "https://www.drupal.org/u/mpdonadio",
+      "role": "Maintainer"
+    }
+  ],
+  "support": {
+    "issues": "https://drupal.org/project/issues/vr_view"
+  },
+  "license": "GPL-2.0+",
+  "minimum-stability": "dev",
+  "require": { }
+}
