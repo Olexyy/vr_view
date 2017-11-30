@@ -84,7 +84,7 @@ entity.vr_view.delete_form:
 vr_view.vr_view_settings:
   path: 'admin/structure/vr_view_settings'
   defaults:
-    _form: '\Drupal\vr_view\Form\VRViewSettingsForm'
+    _form: '\Drupal\vr_view\Form\VrViewSettingsForm'
     _title: 'VR View Settings'
   requirements:
     _permission: 'administer vr_view entity'
@@ -142,7 +142,7 @@ entity.vr_hotspot.delete_form:
 vr_hotspot.vr_hotspot_settings:
   path: 'admin/structure/vr_hotspot_settings'
   defaults:
-    _form: '\Drupal\vr_view\Form\VRHotspotSettingsForm'
+    _form: '\Drupal\vr_view\Form\VrHotspotSettingsForm'
     _title: 'VR Hotspot Settings'
   requirements:
     _permission: 'administer vr_hotspot entity'
