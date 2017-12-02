@@ -2,8 +2,6 @@
 
 namespace Drupal\vr_view\Form;
 
-use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Language\Language;
 use Drupal\Core\Form\FormStateInterface;
@@ -26,7 +24,7 @@ class VrHotspotForm extends ContentEntityForm {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, $vr_view = NULL, $yaw = NULL, $pitch = NULL) {
-    /* @var $entity \Drupal\vr_view\Entity\VRHotpot */
+    /* @var $entity \Drupal\vr_view\Entity\VrHotpot */
     $form = parent::buildForm($form, $form_state);
     $entity = $this->getEntity();
 

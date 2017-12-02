@@ -23,7 +23,7 @@ use Drupal\vr_view\Entity;
  *   }
  * )
  */
-class VRViewImageFormatter extends FormatterBase {
+class VrViewImageFormatter extends FormatterBase {
 
 
   /**
@@ -32,8 +32,8 @@ class VRViewImageFormatter extends FormatterBase {
   public function settingsSummary() {
     $summary = [];
     $settings = $this->getSettings();
-    $summary[] = $this->t('Displays the VR view image admin');
-    return $summary;
+    $settings[] = $this->t('Displays the VR view image admin');
+    return $settings;
   }
 
   /**

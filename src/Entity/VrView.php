@@ -2,20 +2,21 @@
 
 /**
  * @file
- * Contains \Drupal\vr_view\Entity\VrHotspot.
+ * Contains \Drupal\vr_view\Entity\VrView.
  */
 
 namespace Drupal\vr_view\Entity;
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\vr_view\VrHotspotInterface;
+use Drupal\vr_view\VrViewInterface;
 use Drupal\user\UserInterface;
 
 /**
- * Defines the VR Hotspot entity.
+ * Defines the VR View entity.
  *
  * @ingroup vr_view
  *
@@ -74,22 +75,24 @@ use Drupal\user\UserInterface;
  * is read and cached. Don't forget to clear cache after changes.
  *
  * @ContentEntityType(
- *   id = "vr_hotspot",
- *   label = @Translation("VR Hotspot entity"),
+ *   id = "vr_view",
+ *   label = @Translation("VR View entity"),
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
- *     "list_builder" = "Drupal\vr_view\Entity\Controller\VrHotspotListBuilder",
+ *     "list_builder" = "Drupal\vr_view\Entity\Controller\VrViewListBuilder",
  *     "views_data" = "Drupal\views\EntityViewsData",
  *     "form" = {
- *       "add" = "Drupal\vr_view\Form\VrHotspotForm",
- *       "add_existing" = "Drupal\vr_view\Form\VrHotspotForm",
- *       "edit" = "Drupal\vr_view\Form\VrHotspotForm",
- *       "delete" = "Drupal\vr_view\Form\VrHotspotDeleteForm",
+ *       "add" = "Drupal\vr_view\Form\VrViewForm",
+ *       "edit" = "Drupal\vr_view\Form\VrViewForm",
+ *       "add_to_existing" = "Drupal\vr_view\Form\VrViewForm",
+ *       "interactive" = "Drupal\vr_view\Form\VrViewForm",
+ *       "tie_back" = "Drupal\vr_view\Form\VrViewForm",
+ *       "delete" = "Drupal\vr_view\Form\VrViewDeleteForm",
  *     },
- *     "access" = "Drupal\vr_view\VrHotspotAccessControlHandler",
+ *     "access" = "Drupal\vr_view\VrViewAccessControlHandler",
  *   },
- *   base_table = "vr_hotspot",
- *   admin_permission = "administer vr_hotspot entity",
+ *   base_table = "vr_view",
+ *   admin_permission = "administer vr_view entity",
  *   fieldable = TRUE,
  *   entity_keys = {
  *     "id" = "id",
@@ -97,12 +100,13 @@ use Drupal\user\UserInterface;
  *     "uuid" = "uuid"
  *   },
  *   links = {
- *     "canonical" = "/vr_hotspot/{vr_hotspot}",
- *     "edit-form" = "/vr_hotspot/{vr_hotspot}/edit",
- *     "delete-form" = "/vr_hotspot/{vr_hotspot}/delete",
- *     "collection" = "/vr_hotspot/list"
+ *     "canonical" = "/vr_view/{vr_view}",
+ *     "interactive" = "/vr_view/{vr_view}/interactive",
+ *     "edit-form" = "/vr_view/{vr_view}/edit",
+ *     "delete-form" = "/vr_view/{vr_view}/delete",
+ *     "collection" = "/vr_view/list"
  *   },
- *   field_ui_base_route = "vr_hotspot.vr_hotspot_settings",
+ *   field_ui_base_route = "vr_view.vr_view_settings",
  * )
  *
  * The 'links' above are defined by their path. For core to find the corresponding
@@ -129,7 +133,24 @@ use Drupal\user\UserInterface;
  * the rights privileges can influence the presentation (view, edit) of each
  * field.
  */
-class VRHotpot extends ContentEntityBase implements VrHotspotInterface {
+class VrView extends ContentEntityBase implements VrViewInterface {
+
+  const displayTypeAdmin = 'admin';
+  const displayTypeSelector = 'selector';
+  const displayTypeUser = 'user';
+
+  /**
+   * @inheritdoc
+   *
+   * @param \Drupal\Core\Entity\EntityStorageInterface $storage
+   * @param array $entities
+   */
+  public static function postDelete(EntityStorageInterface $storage, array $entities) {
+    parent::postDelete($storage, $entities);
+    foreach ($entities as $entity) {
+      \Drupal::entityTypeManager()->getStorage('vr_hotspot')->delete($entity->hotspots->referencedEntities());
+    }
+  }
 
   /**
    * {@inheritdoc}
@@ -223,24 +244,25 @@ class VRHotpot extends ContentEntityBase implements VrHotspotInterface {
     // Standard field, used as unique if primary index.
     $fields['id'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('ID'))
-      ->setDescription(t('The ID of the VR Hotspot entity.'))
+      ->setDescription(t('The ID of the VR View entity.'))
       ->setReadOnly(TRUE);
 
     // Standard field, unique outside of the scope of the current project.
     $fields['uuid'] = BaseFieldDefinition::create('uuid')
       ->setLabel(t('UUID'))
-      ->setDescription(t('The UUID of the VR Hotspot entity.'))
+      ->setDescription(t('The UUID of the VR View entity.'))
       ->setReadOnly(TRUE);
 
     // Name field for the contact.
     $fields['name'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Name'))
-      ->setDescription(t('The name of the VR Hotspot entity.'))
+      ->setDescription(t('The name of the VR View entity.'))
       ->setSettings(array(
         'default_value' => '',
         'max_length' => 255,
         'text_processing' => 0,
       ))
+      ->setRequired(TRUE)
       ->setDisplayOptions('view', array(
         'label' => 'above',
         'type' => 'string',
@@ -253,101 +275,193 @@ class VRHotpot extends ContentEntityBase implements VrHotspotInterface {
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    // Yaw field for the hotspot.
-    $fields['yaw'] = BaseFieldDefinition::create('float')
-      ->setLabel(t('Yaw'))
-      ->setDescription(t('The yaw property of the VR Hotspot entity.'))
-      ->setSettings(array(
-        'default_value' => 0,
-        'max_length' => 255,
-        'text_processing' => 0,
-      ))
-      ->setDisplayOptions('view', array(
-        'label' => 'above',
-        'type' => 'float',
-        'weight' => -9,
-      ))
-      ->setDisplayOptions('form', array(
-        'type' => 'number',
-        'weight' => -9,
-      ))
-      ->setDisplayConfigurable('form', TRUE)
-      ->setDisplayConfigurable('view', TRUE);
-
-    // Pitch field for the contact.
-    $fields['pitch'] = BaseFieldDefinition::create('float')
-      ->setLabel(t('Pitch'))
-      ->setDescription(t('The pitch property of the VR Hotspot entity.'))
-      ->setSettings(array(
-        'default_value' => 0,
-        'max_length' => 255,
-        'text_processing' => 0,
-      ))
-      ->setDisplayOptions('view', array(
-        'label' => 'above',
-        'type' => 'float',
-        'weight' => -8,
-      ))
-      ->setDisplayOptions('form', array(
-        'type' => 'number',
-        'weight' => -8,
-      ))
-      ->setDisplayConfigurable('form', TRUE)
-      ->setDisplayConfigurable('view', TRUE);
-
-    // Radius field for the contact.
-    $fields['radius'] = BaseFieldDefinition::create('float')
-      ->setLabel(t('Radius'))
-      ->setDescription(t('The radius property of the VR Hotspot entity.'))
-      ->setSettings(array(
-        'default_value' => 0,
-        'max_length' => 255,
-        'text_processing' => 0,
-      ))
-      ->setDisplayOptions('view', array(
-        'label' => 'above',
-        'type' => 'float',
-        'weight' => -7,
-      ))
-      ->setDisplayOptions('form', array(
-        'type' => 'number',
-        'weight' => -7,
-      ))
-      ->setDisplayConfigurable('form', TRUE)
-      ->setDisplayConfigurable('view', TRUE);
-
-    // Distance field for the contact.
-    $fields['distance'] = BaseFieldDefinition::create('float')
-      ->setLabel(t('Distance'))
-      ->setDescription(t('The distance property of the VR Hotspot entity.'))
-      ->setSettings(array(
-        'default_value' => 0,
-        'max_length' => 255,
-        'text_processing' => 0,
-      ))
-      ->setDisplayOptions('view', array(
-        'label' => 'above',
-        'type' => 'float',
-        'weight' => -6,
-      ))
-      ->setDisplayOptions('form', array(
-        'type' => 'number',
-        'weight' => -6,
-      ))
-      ->setDisplayConfigurable('form', TRUE)
-      ->setDisplayConfigurable('view', TRUE);
-
-    // VR View target field.
-    $fields['vr_view_target'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(t('VR View Target'))
-      ->setDescription(t('VR View Target.'))
-      ->setSetting('target_type', 'vr_view')
-      ->setSetting('handler', 'default')
+    // Image of entity.
+    $fields['image'] = BaseFieldDefinition::create('image')
+      ->setLabel(t('Image'))
+      ->setDescription(t('Image of the VR view entity.'))
       ->setCardinality(1)
+      ->setSettings(array(
+        'file_directory' => 'IMAGE_FOLDER',
+        'alt_field_required' => FALSE,
+        'file_extensions' => 'png jpg jpeg',
+      ))
+      ->setDisplayOptions('view', array(
+        'label' => 'above',
+        'type' => 'vr_view_image',
+        'weight' => -9,
+        'settings' => array(
+          'type' => 'user',
+        ),
+      ))
+      ->setDisplayOptions('form', array(
+        'label' => 'above',
+        'type' => 'image_image',
+        'weight' => -9,
+      ))
+      ->setRequired(TRUE)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // Image of entity.
+    $fields['preview'] = BaseFieldDefinition::create('image')
+      ->setLabel(t('Preview'))
+      ->setDescription(t('Preview of the VR view entity.'))
+      ->setCardinality(1)
+      ->setSettings(array(
+        'file_directory' => 'IMAGE_FOLDER',
+        'alt_field_required' => FALSE,
+        'file_extensions' => 'png jpg jpeg',
+      ))
+      ->setDisplayOptions('view', array(
+        'label' => 'above',
+        'type' => 'image',
+        'weight' => -8,
+        'settings' => array(
+          'type' => 'admin',
+        ),
+      ))
+      ->setDisplayOptions('form', array(
+        'label' => 'above',
+        'type' => 'image_image',
+        'weight' => -8,
+      ))
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // Description field for the contact.
+    $fields['description'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Description'))
+      ->setDescription(t('The description of the VR View entity.'))
+      ->setSettings(array(
+        'default_value' => '',
+        'max_length' => 1200,
+        'text_processing' => 0,
+      ))
+      ->setDisplayOptions('view', array(
+        'label' => 'above',
+        'type' => 'string',
+        'weight' => -7,
+      ))
+      ->setDisplayOptions('form', array(
+        'type' => 'string_textarea',
+        'weight' => -7,
+        'settings' => [
+          'rows' => 6,
+        ],
+      ))
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // Yaw field for the hotspot.
+    $fields['default_yaw'] = BaseFieldDefinition::create('float')
+      ->setLabel(t('Default yaw'))
+      ->setDescription(t('The default yaw property of the VR View entity.'))
+      ->setSettings(array(
+        'default_value' => 0,
+        'max_length' => 255,
+        'text_processing' => 0,
+      ))
+      ->setDisplayOptions('view', array(
+        'label' => 'above',
+        'type' => 'float',
+        'weight' => -6,
+      ))
+      ->setDisplayOptions('form', array(
+        'type' => 'number',
+        'weight' => -6,
+      ))
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // Is yaw only.
+    $fields['is_yaw_only'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Is yaw only'))
+      ->setDescription(t('Determines whether VR view entity is yaw only.'))
+      ->setDefaultValue(FALSE)
+      ->setDisplayOptions('view', array(
+        'label' => 'above',
+        'type' => 'boolean',
+        'weight' => -5,
+      ))
+      ->setDisplayOptions('form', array(
+        'settings' => array('display_label' => TRUE),
+        'weight' => -5,
+      ))
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // Stereo property of entity.
+    $fields['is_stereo'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Is stereo'))
+      ->setDescription(t('Stereo property of VR view entity.'))
+      ->setDefaultValue(FALSE)
+      ->setDisplayOptions('view', array(
+        'label' => 'above',
+        'type' => 'boolean',
+        'weight' => -4,
+      ))
+      ->setDisplayOptions('form', array(
+        'settings' => array('display_label' => TRUE),
+        'weight' => -4,
+      ))
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // Is starting property.
+    $fields['is_starting'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Is starting'))
+      ->setDescription(t('Determines whether VR view entity is starting.'))
+      ->setDefaultValue(FALSE)
+      ->setDisplayOptions('view', array(
+        'label' => 'above',
+        'type' => 'boolean',
+        'weight' => -3,
+      ))
+      ->setDisplayOptions('form', array(
+        'settings' => array('display_label' => TRUE),
+        'weight' => -3,
+      ))
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // Taxonomy type
+    $fields['type'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Type'))
+      ->setSetting('target_type', 'taxonomy_term')
+      ->setSetting('handler', 'default:taxonomy_term')
+      /*->setSetting('handler_settings', array(
+          'target_bundles' => array(
+            'specialite' => 'specialite'
+          )))*/
+      ->setDisplayOptions('view', array(
+        'label' => 'hidden',
+        'type' => 'author',
+        'weight' => -2,
+      ))
+      ->setDisplayOptions('form', array(
+        'type' => 'options_select',//'entity_reference_autocomplete',
+        'weight' => -2,
+        'settings' => array(
+          'match_operator' => 'CONTAINS',
+          'size' => '10',
+          'autocomplete_type' => 'tags',
+          'placeholder' => '',
+        ),
+      ))
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // Hotspots.
+    $fields['hotspots'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Hotspots'))
+      ->setDescription(t('Hotspots of VR View entity.'))
+      ->setSetting('target_type', 'vr_hotspot')
+      ->setSetting('handler', 'default')
+      ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
       ->setDisplayOptions('view', array(
         'label' => 'above',
         'type' => 'entity_reference_label',
-        'weight' => -5,
+        'weight' => -1,
       ))
       ->setDisplayOptions('form', array(
         'type' => 'entity_reference_autocomplete',
@@ -357,7 +471,31 @@ class VRHotpot extends ContentEntityBase implements VrHotspotInterface {
           'autocomplete_type' => 'tags',
           'placeholder' => '',
         ),
-        'weight' => -5,
+        'weight' => -1,
+      ))
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // Owner field of the contact.
+    $fields['user_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Author'))
+      ->setDescription(t('The Name of the associated user.'))
+      ->setSetting('target_type', 'user')
+      ->setSetting('handler', 'default')
+      ->setDisplayOptions('view', array(
+        'label' => 'above',
+        'type' => 'entity_reference_label',
+        'weight' => 0,
+      ))
+      ->setDisplayOptions('form', array(
+        'type' => 'entity_reference_autocomplete',
+        'settings' => array(
+          'match_operator' => 'CONTAINS',
+          'size' => 60,
+          'autocomplete_type' => 'tags',
+          'placeholder' => '',
+        ),
+        'weight' => 0,
       ))
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
@@ -376,4 +514,53 @@ class VRHotpot extends ContentEntityBase implements VrHotspotInterface {
 
     return $fields;
   }
+
+  public static function getDisplayDefinition($type){
+    return [
+      'type' => 'vr_view_image',
+      'settings' => [
+        'type' => $type,
+      ]
+    ];
+  }
+
+  /**
+   * Getter for hotspots property.
+   * @return array
+   */
+  public function getHotspots() {
+    if(isset($this->hotspots))
+      return $this->hotspots->referencedEntities();
+    return [];
+  }
+
+  /**
+   * Getter for name property.
+   * @return string
+   */
+  public function getName() {
+    if(isset($this->name))
+      return $this->name->getValue();
+    return '';
+  }
+
+  public function getRelative() {
+      $relative = [];
+      return $this->getRelativeRecursion($this, $relative, TRUE);
+  }
+
+  private function getRelativeRecursion(EntityInterface $entity, array &$relative, $parent = FALSE) {
+      if (!$parent) {
+          $relative[$entity->id()]= $entity;
+      }
+      $hotspots = $entity->hotspots->referencedEntities();
+      foreach ($hotspots as $hotspot) {
+          if ($vr_view = $hotspot->vr_view_target->entity) {
+              if(!array_key_exists($vr_view->id(), $relative)) {
+                  $this->getRelativeRecursion($vr_view, $relative);
+              }
+          }
+      }
+  }
+
 }
