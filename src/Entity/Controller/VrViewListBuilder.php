@@ -4,6 +4,7 @@ namespace Drupal\vr_view\Entity\Controller;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
+use Drupal\Core\Link;
 use Drupal\Core\Url;
 
 /**
@@ -43,9 +44,9 @@ class VrViewListBuilder extends EntityListBuilder {
   public function buildHeader() {
     $header['id'] = $this->t('ID');
     $header['name'] = $this->t('Name');
-    $header['image'] = $this->t('Image');
-    $header['is_stereo'] = $this->t('Is stereo');
+    $header['is_starting'] = $this->t('Is starting');
     $header['hotspots'] = $this->t('Hotspots');
+    $header['relative'] = $this->t('Relative');
     return $header + parent::buildHeader();
   }
 
@@ -56,10 +57,27 @@ class VrViewListBuilder extends EntityListBuilder {
     /* @var $entity \Drupal\vr_view\Entity\VrView */
     $row['id'] = $entity->id();
     $row['name'] = $entity->toLink();
-    $row['image'] = $entity->image->value;
-    $row['is_stereo'] = $entity->is_stereo->value;
-    $row['hotspots'] = $entity->hotspots->value;
+    $row['is_starting'] = $entity->is_starting? $this->t('yes') : $this->t('no');
+    $row['hotspots'] = $entity->hotspots->count();
+    $row['relative'] = $entity->getRelativeCount();
     return $row + parent::buildRow($entity);
+  }
+
+  /**
+   * Overrides parent::getOperations().
+   *
+   * @inheritdoc
+   */
+  public function getOperations(EntityInterface $entity) {
+    $operations = parent::getOperations($entity);
+
+    $operations['interactive'] = array(
+      'title' => t('Interactive'),
+      'url' => $entity->toUrl('interactive'),
+      'weight' => 20,
+    );
+
+    return $operations;
   }
 
 }

@@ -544,9 +544,14 @@ class VrView extends ContentEntityBase implements VrViewInterface {
     return '';
   }
 
+  public function getRelativeCount() {
+      return count($this->getRelative());
+  }
+
   public function getRelative() {
       $relative = [];
-      return $this->getRelativeRecursion($this, $relative, TRUE);
+      $this->getRelativeRecursion($this, $relative, TRUE);
+      return $relative;
   }
 
   private function getRelativeRecursion(EntityInterface $entity, array &$relative, $parent = FALSE) {

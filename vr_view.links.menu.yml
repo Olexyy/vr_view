@@ -2,9 +2,9 @@
 # vr_view entity
 
 entity.vr_view.collection:
-  title: 'VR View List'
+  title: 'VR View dashboard'
   route_name: entity.vr_view.collection
-  description: 'List VR Views'
+  description: 'VR View dashboard'
   weight: 10
 vr_view.admin.structure.settings:
   title: 'VR View Settings'
