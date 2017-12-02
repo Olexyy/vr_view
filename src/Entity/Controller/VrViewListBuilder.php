@@ -23,10 +23,11 @@ class VrViewListBuilder extends EntityListBuilder {
    */
   public function render() {
     $build['description'] = [
-      '#markup' => $this->t('You can manage fields on the <a href="@adminlink">Vr View admin page</a>.', array(
+      '#markup' => $this->t('You can manage fields, view display and form display on the <a href="@adminlink">Vr View admin page</a>.', array(
         '@adminlink' => \Drupal::urlGenerator()
           ->generateFromRoute('vr_view.vr_view_settings'),
       )),
+      '#weight' => 100,
     ];
 
     $build += parent::render();

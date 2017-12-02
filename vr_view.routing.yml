@@ -16,7 +16,7 @@ entity.vr_view.collection:
   defaults:
   # Calls the list controller, defined in the annotation of the contact entity.
     _entity_list: 'vr_view'
-    _title: 'VR View List'
+    _title: 'VR View Dashboard'
   requirements:
   # Checks for permission directly.
     _permission: 'view vr_view entity'
