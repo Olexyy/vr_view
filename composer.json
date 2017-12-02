@@ -1,5 +1,5 @@
 {
-  "name": "drupal/vr_views",
+  "name": "drupal/vr_view",
   "description": "Integration for VR View images display on Drupal.",
   "type": "drupal-module",
   "license": "GPL-2.0+",
