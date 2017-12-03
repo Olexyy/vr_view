@@ -9,7 +9,7 @@ vr_view.settings_tab:
 vr_view.view:
   route_name: entity.vr_view.canonical
   base_route: entity.vr_view.canonical
-  title: View
+  title: Details
 
 vr_view.interactive:
   route_name: entity.vr_view.interactive
