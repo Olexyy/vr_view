@@ -93,6 +93,10 @@ class VrViewImageFormatter extends FormatterBase {
     $js_settings = $this->jsSettings($entity, VrView::displayTypeAdmin);
     $widget = array();
     $widget['vr_view_widget'] = array(
+      '#type' => 'container',
+      '#attributes' => [
+        'class' => [ 'vr-view-widget', ],
+      ],
       'vr_view_title' => array(
         '#markup' => '<h2 class="vrview-title" id="vrview-title"></h2>',
       ),
@@ -151,6 +155,10 @@ class VrViewImageFormatter extends FormatterBase {
     $js_settings = $this->jsSettings($entity, VrView::displayTypeSelector);
     $widget = array();
     $widget['vr_view_widget'] = array(
+      '#type' => 'container',
+      '#attributes' => [
+        'class' => [ 'vr-view-widget', ],
+      ],
       'vr_view_title' => array(
         '#markup' => '<h2 class="vrview-title" id="vrview-title"></h2>',
       ),
@@ -190,6 +198,10 @@ class VrViewImageFormatter extends FormatterBase {
     $js_settings = $this->jsSettings($entity, VrView::displayTypeUser);
     $widget = array();
     $widget['vr_view_widget'] = array(
+      '#type' => 'container',
+      '#attributes' => [
+        'class' => [ 'vr-view-widget', ],
+      ],
       'vr_view_title' => array(
         '#markup' => '<h2 class="vrview-title" id="vrview-title"></h2>',
       ),

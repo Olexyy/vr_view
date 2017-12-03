@@ -115,7 +115,7 @@ iframe {
   opacity: 0.6;
   padding: 3px 10px;
 }
-#vrview {
+.vr-view-widget {
   max-width: 700px;
   margin: 0 auto;
   position: relative;
