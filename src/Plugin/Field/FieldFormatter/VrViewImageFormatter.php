@@ -56,6 +56,7 @@ class VrViewImageFormatter extends FormatterBase {
         VrView::displayTypeAdmin => $this->t('Admin view'),
         VrView::displayTypeSelector => $this->t('Select params'),
         VrView::displayTypeUser => $this->t('User view'),
+        VrView::displayTypeLanding => $this->t('Landing view'),
       ],
       '#default_value' => $this->getSetting('type'),
     ];
@@ -75,6 +76,9 @@ class VrViewImageFormatter extends FormatterBase {
       }
       else if ($type == VrView::displayTypeSelector) {
         $element[$delta] = $this->viewBuilderSelector($item);
+      }
+      else if ($type == VrView::displayTypeLanding) {
+        $element[$delta] = $this->viewBuilderLanding($item);
       }
       else {
         $element[$delta] = $this->viewBuilderUser($item);
@@ -210,6 +214,27 @@ class VrViewImageFormatter extends FormatterBase {
       ),
       'vr_view_description' => array(
         '#markup' => '<p class="vrview-description" id="vrview-description"></p>',
+      ),
+      '#attached' => array(
+        'library' => array( 'vr_view/vr_library', 'core/drupal.dialog.ajax' ),
+        'drupalSettings' => array( 'vr_view' => $js_settings ),
+      ),
+      '#allowed_tags' => array('div', 'span', 'input', 'a'),
+    );
+    return $widget;
+  }
+
+  private function viewBuilderLanding($item) {
+    $entity = $item->getEntity();
+    $js_settings = $this->jsSettings($entity, VrView::displayTypeLanding);
+    $widget = array();
+    $widget['vr_view_widget'] = array(
+      '#type' => 'container',
+      '#attributes' => [
+        'class' => [ 'vr-view-widget', 'widget-landing' ],
+      ],
+      'vr_view_image' => array(
+        '#markup' => '<div class="style-thang"><div class="style-thang1"></div><div class="style-thang2"></div><div id="vrview"></div></div>',
       ),
       '#attached' => array(
         'library' => array( 'vr_view/vr_library', 'core/drupal.dialog.ajax' ),

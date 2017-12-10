@@ -24,7 +24,7 @@
     "watchify": "^3.8.0"
   },
   "scripts": {
-    "_mkdir": "mkdir build",
+    "_mkdir": "mkdir -p build",
     "build-min-nd": "browserify src/embed/main.js | derequire | uglifyjs -c > build/embed.min.js",
     "build-min": "npm run _mkdir && browserify src/embed/main.js | derequire | uglifyjs -c > build/embed.min.js && npm run build-three-closure",
     "build-dev": "npm run _mkdir && browserify src/embed/main.js | derequire > build/embed.js && npm run build-three-closure",

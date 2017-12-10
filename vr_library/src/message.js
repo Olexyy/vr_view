@@ -30,6 +30,7 @@ var Message = {
   FOCUS: 'focus',
   BLUR: 'blur',
   SET_FULLSCREEN: 'setfullscreen',
+  SPIN: 'spin'
 };
 
 module.exports = Message;

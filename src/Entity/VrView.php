@@ -138,6 +138,7 @@ class VrView extends ContentEntityBase implements VrViewInterface {
   const displayTypeAdmin = 'admin';
   const displayTypeSelector = 'selector';
   const displayTypeUser = 'user';
+  const displayTypeLanding = 'landing';
 
   /**
    * @inheritdoc
@@ -517,9 +518,11 @@ class VrView extends ContentEntityBase implements VrViewInterface {
 
   public static function getDisplayDefinition($type){
     return [
+      'label' => 'hidden',
       'type' => 'vr_view_image',
       'settings' => [
         'type' => $type,
+        'label' => 'hidden',
       ]
     ];
   }

@@ -16,6 +16,7 @@ var modes = new Object({
     typeUser : 'user'
 });
 var linkHotspotPosition;
+var spinning = null;
 
 function setSourceParams() {
     mode = drupalSettings.vr_view.mode;
@@ -80,6 +81,9 @@ function onVRViewClick(e) {
     else {
         vrView.getPosition();
     }
+    if(mode !== 'landing') {
+        clearInterval(spinning);
+    }
 }
 
 function loadScene(id) {
@@ -118,7 +122,6 @@ function loadScene(id) {
             }
         }
     }
-    // TODO separate func for elem and set default pitch  and yaw...
     vrView.setContent({
         image: views[id]['source'],
         preview: views[id]['source'],
@@ -140,6 +143,9 @@ function loadScene(id) {
         }
     }
     console.log('loadedScene', id);
+    spinning = setInterval(function () {
+        this.vrView.spin(0.03, 1000);
+    }, 1000);
 }
 
 function onVRViewPosition(e) {

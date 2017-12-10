@@ -257,6 +257,16 @@ WorldRenderer.prototype.autopan = function(duration) {
       .start();
 };
 
+/**
+ * Do camera spin. Angle, duration.
+ */
+WorldRenderer.prototype.spin = function(angle, duration) {
+    var targetY = this.camera.parent.rotation.y - angle;
+    var tween = new TWEEN.Tween(this.camera.parent.rotation)
+        .to({y: targetY}, duration)
+        .start();
+};
+
 WorldRenderer.prototype.init_ = function(hideFullscreenButton) {
   var container = document.querySelector('body');
   var aspect = window.innerWidth / window.innerHeight;

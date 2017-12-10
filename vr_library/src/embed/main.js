@@ -40,6 +40,7 @@ receiver.on(Message.MUTED, onMuted);
 receiver.on(Message.SET_CURRENT_TIME, onUpdateCurrentTime);
 receiver.on(Message.GET_POSITION, onGetPosition);
 receiver.on(Message.SET_FULLSCREEN, onSetFullscreen);
+receiver.on(Message.SPIN, spin);
 
 window.addEventListener('load', onLoad);
 
@@ -370,6 +371,7 @@ function loop(time) {
   worldRenderer.submitFrame();
   stats.end();
 }
+
 function onGetPosition() {
     Util.sendParentMessage({
         type: 'getposition',
@@ -378,4 +380,8 @@ function onGetPosition() {
             Pitch: worldRenderer.camera.rotation.x * 180 / Math.PI
         }
     });
+}
+
+function spin(data) {
+    worldRenderer.spin(data.angle, data.duration);
 }

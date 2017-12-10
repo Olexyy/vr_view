@@ -151,6 +151,9 @@ Player.prototype.getDuration = function() {
 Player.prototype.setFullscreen = function() {
   this.sender.send({type: Message.SET_FULLSCREEN});
 };
+Player.prototype.spin = function(angle, duration) {
+    this.sender.send({type: Message.SPIN, data : { angle: angle, duration:duration }});
+};
 
 /**
  * Helper for creating an iframe.

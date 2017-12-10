@@ -58,6 +58,7 @@ IFrameMessageReceiver.prototype.onMessage_ = function(event) {
     case Message.SET_FULLSCREEN:
     case Message.FOCUS:
     case Message.BLUR:
+    case Message.SPIN:
       this.emit(type, data);
       break;
     default:
