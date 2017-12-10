@@ -13,7 +13,8 @@ var mode;
 var modes = new Object({
     typeAdmin : 'admin',
     typeSelector : 'selector',
-    typeUser : 'user'
+    typeUser : 'user',
+    typeLanding : 'landing'
 });
 var linkHotspotPosition;
 var spinning = null;
@@ -32,6 +33,9 @@ function setSourceParams() {
 
 function onLoad() {
     setSourceParams();
+    if(mode === modes.typeLanding) {
+        document.getElementById('widget-landing-wrapper').setAttribute('hidden', 'hidden');
+    }
     vrView = new VRView.Player('#vrview', {
     width: '100%',
     height: 480,
@@ -81,7 +85,7 @@ function onVRViewClick(e) {
     else {
         vrView.getPosition();
     }
-    if(mode !== 'landing') {
+    if(mode !== modes.typeLanding) {
         clearInterval(spinning);
     }
 }
@@ -131,21 +135,30 @@ function loadScene(id) {
         is_autopan_off: true
     });
     // Add all the hotspots for the scene
-    var sceneHotSpots = views[id]['hotspots'];
-    for (var hotSpotKey in sceneHotSpots) {
-        if(sceneHotSpots.hasOwnProperty(hotSpotKey)) {
-            vrView.addHotspot(hotSpotKey, {
-                pitch: sceneHotSpots[hotSpotKey]['pitch'],
-                yaw: sceneHotSpots[hotSpotKey]['yaw'],
-                radius: sceneHotSpots[hotSpotKey]['radius'],
-                distance: sceneHotSpots[hotSpotKey]['distance']
-            });
+    if(mode !== modes.typeLanding) {
+        var sceneHotSpots = views[id]['hotspots'];
+        for (var hotSpotKey in sceneHotSpots) {
+            if (sceneHotSpots.hasOwnProperty(hotSpotKey)) {
+                vrView.addHotspot(hotSpotKey, {
+                    pitch: sceneHotSpots[hotSpotKey]['pitch'],
+                    yaw: sceneHotSpots[hotSpotKey]['yaw'],
+                    radius: sceneHotSpots[hotSpotKey]['radius'],
+                    distance: sceneHotSpots[hotSpotKey]['distance']
+                });
+            }
         }
     }
     console.log('loadedScene', id);
-    spinning = setInterval(function () {
-        this.vrView.spin(0.03, 1000);
-    }, 1000);
+    if(mode === modes.typeUser || mode === modes.typeLanding) {
+        spinning = setInterval(function () {
+            this.vrView.spin(0.03, 1000);
+        }, 1000);
+    }
+    if(mode === modes.typeLanding) {
+        setTimeout(function() {
+            document.getElementById('widget-landing-wrapper').removeAttribute('hidden');
+        }, 1000);
+    }
 }
 
 function onVRViewPosition(e) {

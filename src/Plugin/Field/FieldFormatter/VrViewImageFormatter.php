@@ -234,7 +234,7 @@ class VrViewImageFormatter extends FormatterBase {
         'class' => [ 'vr-view-widget', 'widget-landing' ],
       ],
       'vr_view_image' => array(
-        '#markup' => '<div class="style-thang"><div class="style-thang1"></div><div class="style-thang2"></div><div id="vrview"></div></div>',
+        '#markup' => '<div id="widget-landing-wrapper"><div class="style-thang1"></div><div class="style-thang2"></div><div id="vrview"></div></div>',
       ),
       '#attached' => array(
         'library' => array( 'vr_view/vr_library', 'core/drupal.dialog.ajax' ),
