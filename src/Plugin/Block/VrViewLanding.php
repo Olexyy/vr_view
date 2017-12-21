@@ -30,9 +30,7 @@ class VrViewLanding extends BlockBase {
     if($vr_view) {
       $content = $vr_view->image->view(VrView::getDisplayDefinition(VrView::displayTypeLanding));
     }
-    return $content;/*array(
-      '#markup' => $content,
-    );*/
+    return $content;
   }
 
   /**
