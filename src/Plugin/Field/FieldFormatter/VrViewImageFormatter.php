@@ -255,7 +255,7 @@ class VrViewImageFormatter extends FormatterBase {
    */
   private function jsSettings(EntityInterface $entity, $type) {
     $module_path = \Drupal::service('module_handler')->getModule('vr_view')->getPath();
-    $start_image_uri = file_create_url($module_path. '/res/blank.png');
+    $start_image_uri = file_url_transform_relative(file_create_url($module_path. '/res/blank.png'));
     $vr_view_name = $entity->name->value.'_'.$entity->id();
     $js_settings = [
       'mode' => $type,
